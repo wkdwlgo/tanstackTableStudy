@@ -1,0 +1,62 @@
+import { userAuthorityDTO, userDTO } from '@/types/user.types'
+
+export const mockUser: userDTO['get'][] = [
+  {
+    id: 1051,
+    first_name: '정은',
+    last_name: '김',
+    email: 'jek@enterprise1.co.kr',
+    phone: '010-1234-1234',
+    sms_yn: 'N',
+    activated: true,
+    lang_key: 'ko',
+    created_date: '2025-02-21',
+    reset_date: '2025-09-16',
+    authorities: ['ROLE_USER'],
+  },
+  {
+    id: 3,
+    first_name: 'Administrator',
+    last_name: 'Administrator',
+    email: 'Administrator@localhost.kr',
+    phone: '01012345678',
+    sms_yn: 'Y',
+    activated: true,
+    lang_key: 'ko',
+    created_date: '2020-09-09',
+    reset_date: '2025-09-11',
+    authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+  },
+  {
+    id: 5,
+    first_name: 'User',
+    last_name: 'User',
+    email: 'Administrator@localhost.kr.kr',
+    phone: '01090432143',
+    sms_yn: 'N',
+    activated: false,
+    lang_key: 'ko',
+    created_date: '2020-09-09',
+    reset_date: '2025-09-11',
+    authorities: ['ROLE_USER'],
+  },
+]
+
+export const mockUserAuthority: userAuthorityDTO['get'][] = [
+  {
+    user_id: 3,
+    authority_name: 'ROLE_ADMIN',
+  },
+  {
+    user_id: 3,
+    authority_name: 'ROLE_USER',
+  },
+  {
+    user_id: 1051,
+    authority_name: 'ROLE_USER',
+  },
+  {
+    user_id: 5,
+    authority_name: 'ROLE_USER',
+  },
+]
