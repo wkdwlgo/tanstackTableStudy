@@ -220,6 +220,12 @@ export default function UserTable() {
               <option value="ko">ko</option>
               <option value="en">en</option>
             </select>
+            <input
+              className="h-9 px-3 rounded border border-gray-300 w-65"
+              placeholder="검색: 이름/이메일/전화번호"
+              value={globalFilter ?? ''}
+              onChange={(e) => setGlobalFilter(e.target.value)}
+            />
             <button
               className="h-9 py-2 rounded border border-gray-300"
               onClick={() => {
