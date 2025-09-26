@@ -1,4 +1,5 @@
 import {
+  ColumnDef,
   type ColumnFiltersState,
   createColumnHelper,
   flexRender,
@@ -12,19 +13,27 @@ import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
 
 import { Button } from '@/components/ui/button'
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table'
 import { mockUser } from '@/data/user'
 import type { userDTO } from '@/types/user.types'
 type User = userDTO['get']
 
 export default function UserTable() {
-  const [data, setData] = useState<User[]>(() => [...mockUser])
+  const [data] = useState<User[]>(() => [...mockUser])
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
 
   const columnHelper = useMemo(() => createColumnHelper<User>(), [])
 
-  const columns = useMemo<ColumnDef<User, any>[]>(
+  const columns = useMemo<ColumnDef<User, unknown>[]>(
     () => [
       {
         id: 'userInfo',
@@ -153,7 +162,7 @@ export default function UserTable() {
         ],
       },
     ],
-    [columnHelper, setData],
+    [columnHelper],
   )
 
   const table = useReactTable({
@@ -239,82 +248,46 @@ export default function UserTable() {
         </div>
       </div>
 
-      <table className="w-full border-collapse text-sm">
-        <thead>
+      <Table className="w-full text-sm">
+        <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
-            <tr
-              key={headerGroup.id}
-              className={headerGroup.depth === 0 ? 'bg-gray-200' : 'bg-gray-300'}
-            >
+            <TableRow key={headerGroup.id}>
               {headerGroup.headers.map((header) => {
-                const isLeaf = header.column.getLeafHeaders?.()
-                  ? header.column.getLeafHeaders().length === 0
-                  : !header.columns
                 const canSort = header.column.getCanSort()
-
-                // 상위/하위 모두 colSpan 필수!
                 return (
-                  <th
+                  <TableHead
                     key={header.id}
                     colSpan={header.colSpan}
-                    className={[
-                      'border border-gray-400 py-3 px-7 text-center align-middle whitespace-nowrap',
-                      canSort && header.isPlaceholder === false && isLeaf
-                        ? 'cursor-pointer hover:bg-gray-100'
-                        : 'cursor-default',
-                    ].join(' ')}
-                    onClick={
-                      // 리프 헤더이고 정렬 가능한 경우에만 클릭 핸들러
-                      canSort && isLeaf ? header.column.getToggleSortingHandler() : undefined
-                    }
-                    title={canSort && isLeaf ? '클릭해서 정렬' : undefined}
+                    className={canSort ? 'cursor-pointer' : 'cursor-default'}
+                    onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                   >
-                    {header.isPlaceholder ? null : (
-                      <span className="inline-flex items-center justify-center gap-1">
-                        <span>
-                          {flexRender(header.column.columnDef.header, header.getContext())}
-                        </span>
-                        {isLeaf && canSort && (
-                          <span className="ml-1 inline-flex w-4 h-4 items-center justify-center">
-                            {header.column.getIsSorted() === 'asc' ? (
-                              <ChevronUp size={16} />
-                            ) : header.column.getIsSorted() === 'desc' ? (
-                              <ChevronDown size={16} />
-                            ) : null}
-                          </span>
-                        )}
-                      </span>
-                    )}
-                  </th>
+                    <div className="flex gap-1">
+                      {flexRender(header.column.columnDef.header, header.getContext())}
+                      {header.column.getIsSorted() === 'asc' ? (
+                        <ChevronUp size={16} />
+                      ) : header.column.getIsSorted() === 'desc' ? (
+                        <ChevronDown size={16} />
+                      ) : null}
+                    </div>
+                  </TableHead>
                 )
               })}
-            </tr>
+            </TableRow>
           ))}
-        </thead>
+        </TableHeader>
 
-        <tbody>
-          {table.getRowModel().rows.map((row, i) => (
-            <tr key={row.id} className={i % 2 === 0 ? 'bg-white' : 'bg-gray-100'}>
+        <TableBody>
+          {table.getRowModel().rows.map((row) => (
+            <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
-                <td key={cell.id} className="border border-gray-400 p-2 align-middle text-center">
+                <TableCell key={cell.id}>
                   {flexRender(cell.column.columnDef.cell, cell.getContext())}
-                </td>
+                </TableCell>
               ))}
-            </tr>
+            </TableRow>
           ))}
-
-          {table.getRowModel().rows.length === 0 && (
-            <tr>
-              <td
-                colSpan={table.getAllLeafColumns().length}
-                className="p-4 text-center text-gray-500"
-              >
-                데이터가 없습니다.
-              </td>
-            </tr>
-          )}
-        </tbody>
-      </table>
+        </TableBody>
+      </Table>
     </div>
   )
 }
