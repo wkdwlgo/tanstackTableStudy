@@ -196,6 +196,19 @@ export const mockUser: userDTO['get'][] = [
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
   },
+  {
+    id: 10,
+    first_name: 'Sun',
+    last_name: 'Jisoleil',
+    email: 'jisoleil@localhost.kr',
+    phone: '01083301083',
+    sms_yn: 'Y',
+    activated: true,
+    lang_key: 'en',
+    created_date: '2025-09-29',
+    reset_date: '2025-09-29',
+    authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+  },
 ]
 
 export const mockUserAuthority: userAuthorityDTO['get'][] = [
