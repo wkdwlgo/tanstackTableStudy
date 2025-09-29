@@ -5,6 +5,7 @@ import {
   flexRender,
   getCoreRowModel,
   getFilteredRowModel,
+  getPaginationRowModel,
   getSortedRowModel,
   SortingState,
   useReactTable,
@@ -32,6 +33,15 @@ export default function UserTable() {
   const [globalFilter, setGlobalFilter] = useState('')
 
   const columnHelper = useMemo(() => createColumnHelper<User>(), [])
+
+  type PaginationState = {
+    pageIndex: number
+    pageSize: number
+  }
+  const [pagination, setPagination] = useState<PaginationState>({
+    pageIndex: 0,
+    pageSize: 10,
+  })
 
   const columns = useMemo<ColumnDef<User, unknown>[]>(
     () => [
@@ -168,13 +178,15 @@ export default function UserTable() {
   const table = useReactTable({
     data,
     columns,
-    state: { sorting, columnFilters, globalFilter },
+    state: { sorting, columnFilters, globalFilter, pagination },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
+    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
   })
 
   return (
@@ -246,6 +258,26 @@ export default function UserTable() {
             </button>
           </div>
         </div>
+
+        <div className="flex items-center justify-between">
+          <p>Total:{table.getRowCount()}</p>
+          <div className="flex gap-1 items-center">
+            <span>pageTerm:</span>
+            <select
+              className="h-9 px-2 rounded border border-gray-300"
+              value={pagination.pageSize}
+              onChange={(e) => {
+                const newSize = Number(e.target.value)
+                setPagination((old) => ({ ...old, pageSize: newSize, pageIndex: 0 }))
+              }}
+            >
+              <option value={5}>5</option>
+              <option value={10}>10</option>
+              <option value={15}>15</option>
+              <option value={20}>20</option>
+            </select>
+          </div>
+        </div>
       </div>
 
       <Table className="w-full text-sm">
@@ -257,7 +289,7 @@ export default function UserTable() {
                 return (
                   <TableHead
                     key={header.id}
-                    colSpan={header.colSpan}
+                    colSpan={header.colSpan} // 헤더 그룹핑을 위한 병합처리
                     className={canSort ? 'cursor-pointer' : 'cursor-default'}
                     onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                   >
@@ -277,7 +309,7 @@ export default function UserTable() {
         </TableHeader>
 
         <TableBody>
-          {table.getRowModel().rows.map((row) => (
+          {table.getPaginationRowModel().rows.map((row) => (
             <TableRow key={row.id}>
               {row.getVisibleCells().map((cell) => (
                 <TableCell key={cell.id}>
@@ -288,6 +320,25 @@ export default function UserTable() {
           ))}
         </TableBody>
       </Table>
+      <div className="flex justify-between py-3">
+        <button
+          className="px-4 py-2 rounded bg-gray-300"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          이전
+        </button>
+        <span>
+          페이지 {pagination.pageIndex + 1} / {table.getPageCount()}
+        </span>
+        <button
+          className="px-4 py-2 rounded bg-gray-300"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          다음
+        </button>
+      </div>
     </div>
   )
 }
