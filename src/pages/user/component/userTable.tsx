@@ -13,7 +13,6 @@ import {
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -25,6 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { mockUser } from '@/data/user'
+import { useUrlPagination } from '@/hooks/useUrlPagination'
 import type { userDTO } from '@/types/user.types'
 
 import UserModal from './userModal'
@@ -37,40 +37,8 @@ export default function UserTable() {
   const [globalFilter, setGlobalFilter] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  const [searchParams, setSearchParams] = useSearchParams()
-
-  const pagination: PaginationState = useMemo(() => {
-    // URL에서 pageIndex와 pageSize를 읽어오며, 값이 없으면 기본값 사용
-    const pageIndex = parseInt(searchParams.get('pageIndex') ?? '0', 10)
-    const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10)
-
-    return {
-      pageIndex: Math.max(0, pageIndex), // pageIndex는 0 미만이 되지 않도록 처리
-      pageSize: pageSize > 0 ? pageSize : 10, // pageSize는 10 이상의 유효한 값이 되도록 처리
-    }
-  }, [searchParams])
-
-  // 2. TanStack Table의 onPaginationChange 함수를 대체하는 핸들러
-  const handlePaginationChange = (
-    updater: ((old: PaginationState) => PaginationState) | PaginationState,
-  ) => {
-    // updater 함수를 실행하여 새로운 상태를 얻습니다.
-    const newPagination = typeof updater === 'function' ? updater(pagination) : updater
-
-    // URL 쿼리 파라미터를 업데이트합니다.
-    const newParams = new URLSearchParams(searchParams.toString())
-    newParams.set('pageIndex', String(newPagination.pageIndex))
-    newParams.set('pageSize', String(newPagination.pageSize))
-
-    setSearchParams(newParams, { replace: true }) // URL 업데이트
-  }
-
+  const { pagination, onPaginationChange } = useUrlPagination()
   const columnHelper = useMemo(() => createColumnHelper<User>(), [])
-
-  type PaginationState = {
-    pageIndex: number
-    pageSize: number
-  }
 
   const columns = useMemo<ColumnDef<User, unknown>[]>(
     () => [
@@ -220,7 +188,7 @@ export default function UserTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: handlePaginationChange,
+    onPaginationChange: onPaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
