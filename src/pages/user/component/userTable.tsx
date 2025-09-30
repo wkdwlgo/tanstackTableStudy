@@ -1,4 +1,4 @@
-import { Dialog, DialogContent, DialogTrigger } from '@radix-ui/react-dialog'
+import { Dialog, DialogContent } from '@radix-ui/react-dialog'
 import {
   ColumnDef,
   type ColumnFiltersState,
@@ -24,6 +24,7 @@ import {
   TableRow,
 } from '@/components/ui/table'
 import { mockUser } from '@/data/user'
+import { useModal } from '@/hooks/useModal'
 import { useUrlPagination } from '@/hooks/useUrlPagination'
 import type { userDTO } from '@/types/user.types'
 
@@ -35,9 +36,13 @@ export default function UserTable() {
   const [sorting, setSorting] = useState<SortingState>([])
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([])
   const [globalFilter, setGlobalFilter] = useState('')
-  const [isModalOpen, setIsModalOpen] = useState(false)
-  const [selectedUser, setSelectedUser] = useState<User | null>(null)
   const { pagination, onPaginationChange } = useUrlPagination()
+  const {
+    isOpen: isModalOpen,
+    modalData: selectedUser,
+    openModal,
+    handleOpenChange: setIsModalOpen,
+  } = useModal<User>()
   const columnHelper = useMemo(() => createColumnHelper<User>(), [])
 
   const columns = useMemo<ColumnDef<User, unknown>[]>(
@@ -160,18 +165,9 @@ export default function UserTable() {
             cell: ({ row }) => {
               const user = row.original as User
               return (
-                <DialogTrigger>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setSelectedUser(user) // 선택된 사용자 정보 저장
-                      setIsModalOpen(true) // 모달 열기
-                    }}
-                  >
-                    상세정보
-                  </Button>
-                </DialogTrigger>
+                <Button variant="ghost" size="sm" onClick={() => openModal(user)}>
+                  상세정보
+                </Button>
               )
             },
           }),
@@ -196,7 +192,7 @@ export default function UserTable() {
   })
 
   return (
-    <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+    <>
       <div className="py-1">
         <div className="py-3">
           <div className="flex flex-col gap-3">
@@ -263,18 +259,9 @@ export default function UserTable() {
               >
                 필터 초기화
               </button>
-              <DialogTrigger>
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => {
-                    setSelectedUser(null) // 선택된 사용자 정보 저장
-                    setIsModalOpen(true) // 모달 열기
-                  }}
-                >
-                  ADD
-                </Button>
-              </DialogTrigger>
+              <Button variant="ghost" size="sm" onClick={() => openModal()}>
+                ADD
+              </Button>
             </div>
           </div>
 
@@ -364,9 +351,11 @@ export default function UserTable() {
           </button>
         </div>
       </div>
-      <DialogContent className="sm:max-w-[425px]">
-        <UserModal user={selectedUser} />
-      </DialogContent>
-    </Dialog>
+      <Dialog open={isModalOpen} onOpenChange={setIsModalOpen}>
+        <DialogContent className="sm:max-w-[425px] fixed z-50 bg-white p-6 shadow-lg rounded-lg w-full max-w-md top-[50%] left-[50%] -translate-x-[50%] -translate-y-[50%]">
+          <UserModal user={selectedUser} />
+        </DialogContent>
+      </Dialog>
+    </>
   )
 }
