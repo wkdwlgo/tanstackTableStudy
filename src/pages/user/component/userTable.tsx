@@ -13,6 +13,7 @@ import {
 } from '@tanstack/react-table'
 import { ChevronDown, ChevronUp } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useSearchParams } from 'react-router-dom'
 
 import { Button } from '@/components/ui/button'
 import {
@@ -36,7 +37,33 @@ export default function UserTable() {
   const [globalFilter, setGlobalFilter] = useState('')
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [selectedUser, setSelectedUser] = useState<User | null>(null)
-  //const [grouping, setGrouping]= useState<Array<>>
+  const [searchParams, setSearchParams] = useSearchParams()
+
+  const pagination: PaginationState = useMemo(() => {
+    // URL에서 pageIndex와 pageSize를 읽어오며, 값이 없으면 기본값 사용
+    const pageIndex = parseInt(searchParams.get('pageIndex') ?? '0', 10)
+    const pageSize = parseInt(searchParams.get('pageSize') ?? '10', 10)
+
+    return {
+      pageIndex: Math.max(0, pageIndex), // pageIndex는 0 미만이 되지 않도록 처리
+      pageSize: pageSize > 0 ? pageSize : 10, // pageSize는 10 이상의 유효한 값이 되도록 처리
+    }
+  }, [searchParams])
+
+  // 2. TanStack Table의 onPaginationChange 함수를 대체하는 핸들러
+  const handlePaginationChange = (
+    updater: ((old: PaginationState) => PaginationState) | PaginationState,
+  ) => {
+    // updater 함수를 실행하여 새로운 상태를 얻습니다.
+    const newPagination = typeof updater === 'function' ? updater(pagination) : updater
+
+    // URL 쿼리 파라미터를 업데이트합니다.
+    const newParams = new URLSearchParams(searchParams.toString())
+    newParams.set('pageIndex', String(newPagination.pageIndex))
+    newParams.set('pageSize', String(newPagination.pageSize))
+
+    setSearchParams(newParams, { replace: true }) // URL 업데이트
+  }
 
   const columnHelper = useMemo(() => createColumnHelper<User>(), [])
 
@@ -44,10 +71,6 @@ export default function UserTable() {
     pageIndex: number
     pageSize: number
   }
-  const [pagination, setPagination] = useState<PaginationState>({
-    pageIndex: 0,
-    pageSize: 10,
-  })
 
   const columns = useMemo<ColumnDef<User, unknown>[]>(
     () => [
@@ -197,7 +220,7 @@ export default function UserTable() {
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onGlobalFilterChange: setGlobalFilter,
-    onPaginationChange: setPagination,
+    onPaginationChange: handlePaginationChange,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
@@ -293,10 +316,15 @@ export default function UserTable() {
               <span>pageTerm:</span>
               <select
                 className="h-9 px-2 rounded border border-gray-300"
-                value={pagination.pageSize}
+                value={pagination.pageSize} // 👈 useMemo로 계산된 pagination 사용
                 onChange={(e) => {
                   const newSize = Number(e.target.value)
-                  setPagination((old) => ({ ...old, pageSize: newSize, pageIndex: 0 }))
+                  // TanStack Table의 onPaginationChange 시그니처에 맞게 함수를 전달
+                  table.setPagination((old) => ({
+                    ...old,
+                    pageIndex: 0, // pageSize가 변경될 땐 항상 첫 페이지(0)로 리셋
+                    pageSize: newSize,
+                  }))
                 }}
               >
                 <option value={5}>5</option>
