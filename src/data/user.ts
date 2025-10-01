@@ -13,6 +13,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-02-21',
     reset_date: '2025-09-16',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 3,
@@ -26,6 +27,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 5,
@@ -39,6 +41,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 1051,
@@ -52,6 +55,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-02-21',
     reset_date: '2025-09-16',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 3,
@@ -65,6 +69,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 5,
@@ -78,6 +83,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 1051,
@@ -91,6 +97,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-02-21',
     reset_date: '2025-09-16',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 3,
@@ -104,6 +111,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 5,
@@ -117,6 +125,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 1051,
@@ -130,6 +139,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-02-21',
     reset_date: '2025-09-16',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 3,
@@ -143,6 +153,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 5,
@@ -156,6 +167,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 1051,
@@ -169,6 +181,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-02-21',
     reset_date: '2025-09-16',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 3,
@@ -182,6 +195,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 5,
@@ -195,6 +209,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2020-09-09',
     reset_date: '2025-09-11',
     authorities: ['ROLE_USER'],
+    password: 'wlgo5067@',
   },
   {
     id: 10,
@@ -208,6 +223,7 @@ export const mockUser: userDTO['get'][] = [
     created_date: '2025-09-29',
     reset_date: '2025-09-29',
     authorities: ['ROLE_ADMIN', 'ROLE_USER'],
+    password: 'wlgo5067@',
   },
 ]
 

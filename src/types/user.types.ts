@@ -11,6 +11,7 @@ export interface userDTO {
     created_date: string
     reset_date: string
     authorities?: string[] | null
+    password: string
   }
 }
 

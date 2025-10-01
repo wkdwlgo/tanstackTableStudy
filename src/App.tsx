@@ -1,5 +1,6 @@
 import { Separator } from '@radix-ui/react-separator'
 import { Outlet } from 'react-router-dom'
+import { Toaster } from 'sonner'
 
 import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
 
@@ -18,6 +19,7 @@ export default function App() {
         </header>
         <main className="p-4">
           <Outlet />
+          <Toaster />
         </main>
       </SidebarInset>
     </SidebarProvider>

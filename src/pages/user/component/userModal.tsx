@@ -1,5 +1,6 @@
 import { DialogClose, DialogDescription, DialogTitle } from '@radix-ui/react-dialog' // 필요한 다른 컴포넌트 추가
 import { SubmitHandler, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
 
 import { Button } from '@/components/ui/button'
 import { DialogFooter, DialogHeader } from '@/components/ui/dialog'
@@ -9,8 +10,12 @@ import type { userDTO } from '@/types/user.types'
 
 type User = userDTO['get']
 
+interface UserForm extends User {
+  confirmPassword?: string
+}
+
 export default function UserModal({ user }: { user: User }) {
-  const defaultValues: User = {
+  const defaultValues: UserForm = {
     id: user?.id || 0,
     first_name: user?.first_name || '',
     last_name: user?.last_name || '',
@@ -22,25 +27,35 @@ export default function UserModal({ user }: { user: User }) {
     created_date: user?.created_date || '',
     reset_date: user?.reset_date || '',
     authorities: user?.authorities || [],
+    password: '',
+    confirmPassword: '',
   }
   const {
     register, // 필드를 폼에 등록하는 함수
     handleSubmit, // 폼 제출을 처리하는 함수
+    watch,
     formState: { errors, isSubmitting }, // 폼 상태 (에러, 로딩 상태 등)
-  } = useForm<User>({
+  } = useForm<UserForm>({
     defaultValues: defaultValues,
   })
 
-  const onSubmit: SubmitHandler<User> = async (data) => {
+  const onSubmit: SubmitHandler<UserForm> = async (data) => {
     console.log('폼 제출 데이터:', data)
 
     if (user) {
       // 수정 로직 (API 호출 등)
       console.log('사용자 수정:', user.id)
+      toast.success('사용자 정보가 수정되었습니다.')
     } else {
       // 추가 로직 (API 호출 등)
       console.log('사용자 추가')
     }
+  }
+
+  const handleDelete = async () => {
+    console.log(`사용자 ID ${user?.id} 삭제 요청..`)
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    toast.success('사용자 정보가 삭제되었습니다.')
   }
 
   return (
@@ -83,8 +98,58 @@ export default function UserModal({ user }: { user: User }) {
           />
           {errors.email && <p className="text-red-500 text-sm">{errors.email.message}</p>}
         </div>
+        {/* 4. 새 비밀번호 필드 */}
+        <div className="space-y-1">
+          <Label htmlFor="password">새 비밀번호</Label>
+          <Input
+            id="password"
+            type="password"
+            {...register('password', {
+              required: false,
+              pattern: {
+                value: /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/,
+                message: '비밀번호는 영문자와 숫자를 포함하여 8자 이상이어야 합니다.',
+              },
+              validate: (value) => {
+                const confirmValue = watch('confirmPassword')
+                if (!value && !confirmValue) return true
+                if (value && !confirmValue) return '비밀번호 확인을 입력해 주세요.'
+                if (value && value.length < 8) return '비밀번호는 8자 이상이어야 합니다.'
+              },
+            })}
+          />
+          {errors.password && <p className="text-red-500 text-sm">{errors.password.message}</p>}
+        </div>
+        {/* 5. 새 비밀번호 확인 필드 */}
+        <div className="space-y-1">
+          <Label htmlFor="confirmPassword">새 비밀번호 확인</Label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            {...register('confirmPassword', {
+              required: false,
+              validate: (value) => {
+                const passwordValue = watch('password')
+                if (!value && !passwordValue) return true
+                return value === passwordValue || '비밀번호가 일치하지 않습니다.'
+              },
+            })}
+          />
+          {errors.confirmPassword && (
+            <p className="text-red-500 text-sm">{errors.confirmPassword.message}</p>
+          )}
+        </div>
       </div>
       <DialogFooter>
+        {user ? (
+          <DialogClose asChild>
+            <Button type="button" variant="secondary" onClick={handleDelete}>
+              삭제
+            </Button>
+          </DialogClose>
+        ) : (
+          <></>
+        )}
         <Button type="submit" disabled={isSubmitting} variant="secondary">
           {isSubmitting ? '저장 중...' : user ? '수정 완료' : '추가'}
         </Button>
